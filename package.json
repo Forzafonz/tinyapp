@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Forzafonz/tinyapp/issues"
   },
-  "homepage": "https://github.com/Forzafonz/tinyapp#readme"
+  "homepage": "https://github.com/Forzafonz/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
