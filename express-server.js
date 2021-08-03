@@ -11,12 +11,12 @@ const urlDatabase = {
 };
 
 function generateRandomString() {
-  const letters = 'abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ'
+  const letters = 'abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ';
   let random = [];
   for (let i = 0; i < 6; i++) random.push(Math.floor(Math.random() * 53));
   let result = random.map(element => {
     return letters[element];
-  })
+  });
   return result.join('');
 }
 
@@ -25,7 +25,7 @@ function addToDatabase(shortUrl, longUrl) {
 }
 
 function getFromDatabase(shortURL) {
-  if (urlDatabase[shortURL] === 'undefined'){
+  if (urlDatabase[shortURL] === 'undefined') {
     return false;
   }
   return urlDatabase[shortURL];
@@ -62,7 +62,7 @@ app.post("/urls", (req, res) => {
   addToDatabase(shortString, req.body['longURL']);
   console.log(req.body);  // Log the POST request body to the console
   res.redirect(`/urls/${shortString}`);         // Respond with 'Ok' (we will replace this)
-  console.log(urlDatabase)
+  console.log(urlDatabase);
 });
 
 
