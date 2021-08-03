@@ -31,6 +31,13 @@ function getFromDatabase(shortURL) {
   return urlDatabase[shortURL];
 }
 
+function removeFromDatabase(shortURL) {
+  if (urlDatabase[shortURL] === 'undefined') {
+    return false;
+  }
+  delete urlDatabase[shortURL];
+}
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -56,14 +63,18 @@ app.get("/u/:shortURL", (req, res) => {
   if (longURL) res.redirect(longURL);
 });
 
-
 app.post("/urls", (req, res) => {
   const shortString = generateRandomString();
   addToDatabase(shortString, req.body['longURL']);
-  console.log(req.body);  // Log the POST request body to the console
   res.redirect(`/urls/${shortString}`);         // Respond with 'Ok' (we will replace this)
   console.log(urlDatabase);
 });
+
+app.post("/urls/:shortURL/delete", (req, res)=> {
+  let toRemove = req.params.shortURL;
+  removeFromDatabase(toRemove);
+  res.redirect('/urls');
+})
 
 
 
