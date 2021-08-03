@@ -38,8 +38,8 @@ function removeFromDatabase(shortURL) {
   delete urlDatabase[shortURL];
 }
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+app.get("/", (req, res) => {
+  res.redirect('/urls/new');
 });
 
 app.get("/urls", (req, res) => {
@@ -58,10 +58,21 @@ app.get("/urls/:shortURL", (req, res) => {
 
 });
 
+// GET route to redirect a user to a website using a shortURL
 app.get("/u/:shortURL", (req, res) => {
   const longURL = getFromDatabase(req.params.shortURL);
   if (longURL) res.redirect(longURL);
 });
+
+// POST route to update a longURL for a specified shortURL
+app.post('/urls/:shortID', (req, res) => {
+  console.log(req.body)
+  let updateVal = req.params.shortID;
+  if (getFromDatabase(updateVal)){
+    addToDatabase(updateVal, req.body.longURL);
+  }
+  res.redirect("/urls");
+})
 
 app.post("/urls", (req, res) => {
   const shortString = generateRandomString();
@@ -70,16 +81,21 @@ app.post("/urls", (req, res) => {
   console.log(urlDatabase);
 });
 
+//Route to edit existing shortURL - longURL pair
+app.post("/urls/:shortURL", (req, res)=> {
+  let toRemove = req.params.shortURL;
+  removeFromDatabase(toRemove);
+  res.redirect('/urls');
+})
+
+//Route to remove existing shortURL - longURL pair
 app.post("/urls/:shortURL/delete", (req, res)=> {
   let toRemove = req.params.shortURL;
   removeFromDatabase(toRemove);
   res.redirect('/urls');
 })
 
-
-
-
-
+//Begin listening via PORT
 app.listen(PORT, () => {
 
   console.log(`Example app listening on port ${PORT}!`);
