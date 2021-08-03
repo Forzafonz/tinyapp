@@ -15,7 +15,7 @@
   <main style="margin: 1em;">
     <h3>My URLs</h3>
     <div class="row justify-content-left">
-    <table class="table col-sm-30" style="width: 700px;">
+    <table class="table col-sm-30" style="width: 50%;" >
       <thead>
         <tr>
           <th scope="col" style="text-align:center">Short URL</th>
@@ -29,7 +29,7 @@
           <tr>
             <td style="text-align:center"><%= url %></td>
             <td style="text-align:center"><%= urls[url] %></td> 
-            <td style="text-align:center"><form method="POST" action="/urls/<%= url %>"><input type="submit" value="Edit" class="btn btn-info"></form></td>
+            <td style="text-align:center"><form method="GET" action="/urls/<%= url %>"><input type="submit" value="Edit" class="btn btn-info"></form></td>
             <td style="text-align:center"><form method="POST" action="/urls/<%= url %>/delete"><input type="submit" value="Delete" class="btn btn-danger"></form></td>
           </tr>
         <% } %>
