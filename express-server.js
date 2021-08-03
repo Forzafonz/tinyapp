@@ -10,6 +10,20 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+function generateRandomString() {
+  const letters = 'abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ'
+  let random = [];
+  for (let i = 0; i < 6; i++) random.push(Math.floor(Math.random() * 53));
+  let result = random.map(element => {
+    return letters[element];
+  })
+  return result.join('');
+}
+
+function addToDatabase(shortUrl, longUrl) {
+  urlDatabase[shortUrl] = longUrl;
+}
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -31,19 +45,15 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  const shortString = generateRandomString();
+  addToDatabase(shortString, req.body['longURL']);
   console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${shortString}`);         // Respond with 'Ok' (we will replace this)
+  console.log(urlDatabase)
 });
 
-function generateRandomString() {
-  const letters = 'abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ'
-  let random = [];
-  for (let i = 0; i < 6; i++) random.push(Math.floor(Math.random() * 53));
-  let result = random.map(element => {
-    return letters[element];
-  })
-  return result.join('');
-}
+
+
 
 
 app.listen(PORT, () => {
