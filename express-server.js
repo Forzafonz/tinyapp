@@ -35,8 +35,21 @@ app.post("/urls", (req, res) => {
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
+function generateRandomString() {
+  const letters = 'abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ'
+  let random = [];
+  for (let i = 0; i < 6; i++) random.push(Math.floor(Math.random() * 53));
+  let result = random.map(element => {
+    return letters[element];
+  })
+  return result.join('');
+}
+
+
 app.listen(PORT, () => {
 
   console.log(`Example app listening on port ${PORT}!`);
 
 });
+
+
