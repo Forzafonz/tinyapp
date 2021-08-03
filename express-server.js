@@ -24,6 +24,13 @@ function addToDatabase(shortUrl, longUrl) {
   urlDatabase[shortUrl] = longUrl;
 }
 
+function getFromDatabase(shortURL) {
+  if (urlDatabase[shortURL] === 'undefined'){
+    return false;
+  }
+  return urlDatabase[shortURL];
+}
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -43,6 +50,12 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVar);
 
 });
+
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = getFromDatabase(req.params.shortURL);
+  if (longURL) res.redirect(longURL);
+});
+
 
 app.post("/urls", (req, res) => {
   const shortString = generateRandomString();
