@@ -2,7 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const {users, urlDatabase} = require("./helpers/data");
 const {PORT} = require("./helpers/constants");
-const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID} = require('./helpers/functions');
+const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID} = require('./helpers/functions');
 
 //Express and its Middleware set-up
 
@@ -25,7 +25,9 @@ app.get("/", (req, res) => {
 //A GET route to show a list of all shortURL and longURL in the "database"
 app.get("/urls", (req, res) => {
 
-  const templateVars = { urls: urlDatabase, 'username': JSON.parse(JSON.stringify(req.cookies))};
+  const id = extractID(req.cookies)
+  console.log("req cookies", req.cookies, "id", id);
+  const templateVars = { urls: urlDatabase, 'userid': id};
   res.render('urls_index.ejs', templateVars);
 
 });
@@ -33,7 +35,8 @@ app.get("/urls", (req, res) => {
 //A GET route used to direct a client to a template which allows creation of new shortURL - longURL pair
 app.get("/urls/new", (req, res) =>{
 
-  const templateVar = { 'username': JSON.parse(JSON.stringify(req.cookies))};
+  const id = extractID(req.cookies)
+  const templateVar = { 'userid': id};
   res.render('urls_new', templateVar);
 
 });
@@ -41,7 +44,9 @@ app.get("/urls/new", (req, res) =>{
 //A GET route which shows information about specified shortURL
 app.get("/urls/:shortURL", (req, res) => {
 
-  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL], 'username': JSON.parse(JSON.stringify(req.cookies))};
+  const id = extractID(req.cookies)
+
+  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL], 'userid': id};
   res.render("urls_show", templateVar);
 
 });
@@ -115,12 +120,16 @@ app.post("/urls/:shortURL/delete", (req, res)=> {
 // A POST route to submit username to save cookies:
 app.post('/login', (req, res) => {
 
-  const userEmail = req.body.email;
-  const userID = getUserID({users, userEmail});
+  const email = req.body.email;
+  const userID = getUserID({data:users, email});
+  
+  if (userID !== null) {
 
   res
     .cookie('userid', userID)
     .redirect('/urls');
+
+  }
 
 });
 
@@ -128,7 +137,7 @@ app.post('/login', (req, res) => {
 app.post('/logout', (req, res) => {
 
   res
-    .clearCookie('username')
+    .clearCookie('userid')
     .redirect('/urls');
 
 });
