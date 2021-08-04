@@ -1,13 +1,18 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const app = express();
-// const bodyParser = require("body-parser");
-const PORT = 8080; // default port 8080
+const PORT = 8080;
+
+//Middleware set-up
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}));
+// app.use(cookieParser);
 
 const urlDatabase = {
+
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+
 };
 
 const generateRandomString = function() {
@@ -119,6 +124,14 @@ app.post("/urls/:shortURL/delete", (req, res)=> {
   res.redirect('/urls');
 
 });
+
+// A post route to submit username to save cookies:
+app.post('/login', (req, res) => {
+  // console.log(req.cookies.uName)
+  let username = req.body.uName;
+  console.log(username)
+  res.redirect('/urls');
+})
 
 //Begin listening via PORT
 app.listen(PORT, () => {
