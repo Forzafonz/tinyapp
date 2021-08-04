@@ -2,7 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const {users, urlDatabase} = require("./helpers/data");
 const {PORT} = require("./helpers/constants");
-const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser} = require('./helpers/functions')
+const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID} = require('./helpers/functions');
 
 //Express and its Middleware set-up
 
@@ -115,30 +115,32 @@ app.post("/urls/:shortURL/delete", (req, res)=> {
 // A POST route to submit username to save cookies:
 app.post('/login', (req, res) => {
 
-  let username = req.body.username;
+  const userEmail = req.body.email;
+  const userID = getUserID({users, userEmail});
+
   res
-    .cookie('username', username)
+    .cookie('userid', userID)
     .redirect('/urls');
 
-})
+});
 
 // A POST route to logout and clear cookies:
 app.post('/logout', (req, res) => {
 
   res
-  .clearCookie('username')
-  .redirect('/urls');
+    .clearCookie('username')
+    .redirect('/urls');
 
-})
+});
 
 //A POST route for registration:
 app.post('/register', (req, res)=> {
 
-  const {email, password} = req.body
+  const {email, password} = req.body;
   const id = getUniqID(users);
-  if(addUser({data:users, email, password, id}) !==  null) {
+  if (addUser({data:users, email, password, id}) !==  null) {
     console.log(users);
-    res.redirect('/urls')
+    res.redirect('/urls');
   }
   
 });
