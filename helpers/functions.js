@@ -37,4 +37,20 @@ const removeFromDatabase = function(urlDatabase, shortURL) {
 
 };
 
-module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase}
+// Function to generate userID:
+const getUniqID = function (data){
+  let uniqueKey = `user${Math.floor(Math.random() * 100)}randomID`;
+  if (data[uniqueKey] === undefined) return uniqueKey;
+  return getUniqID();
+}
+
+//Function to add user to "database":
+const addUser = function ({data, id, email, password}) {
+  if (data[id] === undefined) {
+    data[id] = {id, email, password};
+  } else {
+    return null;
+  }
+}
+
+module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser}
