@@ -62,8 +62,8 @@ app.get("/", (req, res) => {
 
 //A get request to show a list of all shortURL and longURL in the "database"
 app.get("/urls", (req, res) => {
-  console.log(req.cookies)
-  const templateVars = { urls: urlDatabase, 'username': req.cookies};
+
+  const templateVars = { urls: urlDatabase, 'username': JSON.parse(JSON.stringify(req.cookies))};
   res.render('urls_index.ejs', templateVars);
 
 });
@@ -71,7 +71,7 @@ app.get("/urls", (req, res) => {
 //A get request used to direct a client to a template which allows creation of new shortURL - longURL pair
 app.get("/urls/new", (req, res) =>{
 
-  const templateVar = { 'username': req.cookies["username"]};
+  const templateVar = { 'username': JSON.parse(JSON.stringify(req.cookies))};
   res.render('urls_new', templateVar);
 
 });
@@ -79,7 +79,7 @@ app.get("/urls/new", (req, res) =>{
 //A get request which shows information about specified shortURL
 app.get("/urls/:shortURL", (req, res) => {
 
-  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL], 'username': req.cookies["username"]};
+  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL], 'username': JSON.parse(JSON.stringify(req.cookies))};
   res.render("urls_show", templateVar);
 
 });
