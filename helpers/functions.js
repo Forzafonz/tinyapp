@@ -75,5 +75,15 @@ const extractID = function (cookies) {
   return null;
 }
 
+// Function to check if user already exists in "users" object (for registration):
 
-module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID}
+const userExists = function ({email, users}) {
+  for (const key in users) {
+    if (users[key]['email'] === email){
+      return true;
+    }
+  }
+  return false;
+}
+
+module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists}
