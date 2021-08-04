@@ -149,11 +149,15 @@ app.post('/register', (req, res)=> {
 
   const {email, password} = req.body;
   console.log(email, password)
-  if (email === '' || password === '' || userExists({email, users}) === true) {
-    res.
-      status(400)
-      .render('urls_registration-error');
+  if (email === '' || password === '') {
+    res
+      .status(400)
+      .render('urls_registration-error', {error: "Error 400: Email or Password field cannot be empty!"});
     return;
+  } else if (userExists({email, users}) === true) {
+    res
+    .status(400)
+    .render('urls_registration-error', {error: "Error 400: User with this email already exists!"});
   }
 
   const id = getUniqID(users);
