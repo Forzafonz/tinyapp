@@ -1,66 +1,28 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const app = express();
-const PORT = 8080;
+const {users, urlDatabase} = require("./helpers/data");
+const {PORT} = require("./helpers/constants");
+const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase} = require('./helpers/functions')
 
-//Middleware set-up
+//Express and its Middleware set-up
+
+const app = express();
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 
-const urlDatabase = {
+//======================================================================================================================================================================
+//==============================================="GET" ROUTES FOR OPERATIONS WITH longURL and shortURL==================================================================
+//======================================================================================================================================================================
 
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-
-};
-
-const generateRandomString = function() {
-
-  const letters = 'abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ';
-  let random = [];
-  for (let i = 0; i < 6; i++) random.push(Math.floor(Math.random() * 53));
-  let result = random.map(element => {
-    return letters[element];
-  });
-  return result.join('');
-
-};
-
-//Function which is used to add/update longUrl in the database based on shortUrl
-const addToDatabase = function(shortUrl, longUrl) {
-
-  urlDatabase[shortUrl] = longUrl;
-
-};
-
-// Function returns longURL from the database based on shortURL
-const getFromDatabase = function(shortURL) {
-
-  if (urlDatabase[shortURL] === 'undefined') {
-    return false;
-  }
-  return urlDatabase[shortURL];
-};
-
-// Function which removes longURL and shortURL pair from the database
-const removeFromDatabase = function(shortURL) {
-
-  if (urlDatabase[shortURL] === 'undefined') {
-    return false;
-  }
-  delete urlDatabase[shortURL];
-
-};
-
-// A basic redirect for an empty resource request
+// A GET route which redirects from an empty resource request
 app.get("/", (req, res) => {
 
   res.redirect('/urls/new');
 
 });
 
-//A get request to show a list of all shortURL and longURL in the "database"
+//A GET route to show a list of all shortURL and longURL in the "database"
 app.get("/urls", (req, res) => {
 
   const templateVars = { urls: urlDatabase, 'username': JSON.parse(JSON.stringify(req.cookies))};
@@ -68,7 +30,7 @@ app.get("/urls", (req, res) => {
 
 });
 
-//A get request used to direct a client to a template which allows creation of new shortURL - longURL pair
+//A GET route used to direct a client to a template which allows creation of new shortURL - longURL pair
 app.get("/urls/new", (req, res) =>{
 
   const templateVar = { 'username': JSON.parse(JSON.stringify(req.cookies))};
@@ -76,7 +38,7 @@ app.get("/urls/new", (req, res) =>{
 
 });
 
-//A get request which shows information about specified shortURL
+//A GET route which shows information about specified shortURL
 app.get("/urls/:shortURL", (req, res) => {
 
   const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL], 'username': JSON.parse(JSON.stringify(req.cookies))};
@@ -84,54 +46,76 @@ app.get("/urls/:shortURL", (req, res) => {
 
 });
 
-// GET route to redirect a user to a website using a shortURL
+//A  GET route to redirect a user to a website using a shortURL
 app.get("/u/:shortURL", (req, res) => {
 
-  const longURL = getFromDatabase(req.params.shortURL);
+  const longURL = getFromDatabase(urlDatabase, req.params.shortURL);
   if (longURL) res.redirect(longURL);
 
 });
+
+//======================================================================================================================================================================
+//==============================================="GET" ROUTES TO TAKE CARE OF COOKIES AND LOGING ACTIVITIES==============================================================
+//======================================================================================================================================================================
+
+// A GET route to show registration page
+
+app.get('/register', (req, res) => {
+
+  res.render("urls_register");
+
+});
+
+
+//======================================================================================================================================================================
+// ================================================ "POST" ROUTES FOR MODIFYING longURL and shortURL======================================================================
+//======================================================================================================================================================================
+
 
 // POST route to update a longURL for a specified shortURL
 app.post('/urls/:shortID', (req, res) => {
 
   let updateVal = req.params.shortID;
 
-  if (getFromDatabase(updateVal)) {
-    addToDatabase(updateVal, req.body.longURL);
+  if (getFromDatabase(urlDatabase, updateVal)) {
+    addToDatabase(urlDatabase, updateVal, req.body.longURL);
   }
   res.redirect("/urls");
 
 });
 
-// A post route to generate and add a new shortURL - longURL pair to database
+// A POST route to generate and add a new shortURL - longURL pair to database
 app.post("/urls", (req, res) => {
 
   const shortString = generateRandomString();
-  addToDatabase(shortString, req.body['longURL']);
+  addToDatabase(urlDatabase, shortString, req.body['longURL']);
   res.redirect(`/urls/${shortString}`);
 
 });
 
-//Route to edit existing shortURL - longURL pair
+//A POST route to edit existing shortURL - longURL pair
 app.post("/urls/:shortURL", (req, res)=> {
 
   let toRemove = req.params.shortURL;
-  removeFromDatabase(toRemove);
+  removeFromDatabase(urlDatabase, toRemove);
   res.redirect('/urls');
 
 });
 
-//Route to remove existing shortURL - longURL pair
+//A POST route to remove existing shortURL - longURL pair
 app.post("/urls/:shortURL/delete", (req, res)=> {
 
   let toRemove = req.params.shortURL;
-  removeFromDatabase(toRemove);
+  removeFromDatabase(urlDatabase, toRemove);
   res.redirect('/urls');
 
 });
 
-// A post route to submit username to save cookies:
+//======================================================================================================================================================================
+//==============================================="POST" ROUTES TO TAKE CARE OF COOKIES AND LOGING ACTIVITIES==============================================================
+//======================================================================================================================================================================
+// A POST route to submit username to save cookies:
+
 app.post('/login', (req, res) => {
 
   let username = req.body.username;
@@ -141,7 +125,7 @@ app.post('/login', (req, res) => {
 
 })
 
-// A ost route to logout and clear cookies:
+// A POST route to logout and clear cookies:
 app.post('/logout', (req, res) => {
 
   res
@@ -149,6 +133,11 @@ app.post('/logout', (req, res) => {
   .redirect('/urls');
 
 })
+
+//======================================================================================================================================================================
+//=====================================================================Listening Server=================================================================================
+//======================================================================================================================================================================
+
 
 //Begin listening via PORT
 app.listen(PORT, () => {
