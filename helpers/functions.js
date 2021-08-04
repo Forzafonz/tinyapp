@@ -50,7 +50,30 @@ const addUser = function ({data, id, email, password}) {
     data[id] = {id, email, password};
   } else {
     return null;
+  };
+};
+
+//Function to get user id by e-mail:
+
+const getUserID = function ({data, email}) {
+
+  for (let key in data) {
+    if (data[key]['email'] === email) {
+      return data[key]['id'];
+    }
   }
+  return null;
 }
 
-module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser}
+// Function to check and extract ID from cookies:
+
+const extractID = function (cookies) {
+  const result = cookies ? cookies : {}
+  if (cookies['userid'] !== undefined) {
+    return cookies['userid'];
+  }
+  return null;
+}
+
+
+module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID}
