@@ -9,12 +9,12 @@
         <a class="nav-link" href="/urls"><b>My URLs</b></a>
         <a class="nav-link" href="/urls/new"><b>Create New URL</b></a>
       </div>
-        <% if(username['username'] === undefined) { %>
+        <% if (Object.keys(username).length === 0) { %>
         <form method="POST" action="/login" class = "form-inline my-2 my-lg-0"><input type="text" name = 'username' id = 'Username' value = "" placeholder = "Username" class= "form-control">
-        <input type="submit" value="Proceed" class="btn btn-secondary"></form>
+        <input type="submit" value="Log In" class="btn btn-secondary"></form>
         <% } else { %>
-        <p>You are logged as <%=username['username']%></p>
-        <form method="POST" action="/logout"><input type="submit" value="Log Out" class="btn btn-info"></form></td>
+        <div align = "center"><div class = "w-100 p-2 form-inline my-2 my-lg-0">You Are Logged In As :    <%=  username['username']%></div></div>
+        <form method="POST" action="/logout"><input type="submit" value="Log Out" class="btn btn-warning"></form></td>
         <% } %>
     </div>
   </nav>
