@@ -61,20 +61,23 @@ app.get("/", (req, res) => {
 //A get request to show a list of all shortURL and longURL in the "database"
 app.get("/urls", (req, res) => {
 
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"]};
   res.render('urls_index.ejs', templateVars);
+
 });
 
 //A get request used to direct a client to a template which allows creation of new shortURL - longURL pair
 app.get("/urls/new", (req, res) =>{
 
-  res.render('urls_new');
+  const templateVar = { username: req.cookies["username"]};
+  res.render('urls_new', templateVar);
+  
 });
 
 //A get request which shows information about specified shortURL
 app.get("/urls/:shortURL", (req, res) => {
 
-  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL]};
+  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL], username: req.cookies["username"]};
   res.render("urls_show", templateVar);
 
 });
@@ -128,9 +131,11 @@ app.post("/urls/:shortURL/delete", (req, res)=> {
 // A post route to submit username to save cookies:
 app.post('/login', (req, res) => {
   // console.log(req.cookies.uName)
-  let username = req.body.uName;
-  console.log(username)
-  res.redirect('/urls');
+  let username = req.body.username;
+  res
+    .cookie('username', username)
+    .cookie('port', PORT)
+    .redirect('/urls');
 })
 
 //Begin listening via PORT
