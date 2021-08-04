@@ -2,7 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const {users, urlDatabase} = require("./helpers/data");
 const {PORT} = require("./helpers/constants");
-const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase} = require('./helpers/functions')
+const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser} = require('./helpers/functions')
 
 //Express and its Middleware set-up
 
@@ -59,18 +59,15 @@ app.get("/u/:shortURL", (req, res) => {
 //======================================================================================================================================================================
 
 // A GET route to show registration page
-
 app.get('/register', (req, res) => {
 
   res.render("urls_register");
 
 });
 
-
 //======================================================================================================================================================================
 // ================================================ "POST" ROUTES FOR MODIFYING longURL and shortURL======================================================================
 //======================================================================================================================================================================
-
 
 // POST route to update a longURL for a specified shortURL
 app.post('/urls/:shortID', (req, res) => {
@@ -89,7 +86,7 @@ app.post("/urls", (req, res) => {
 
   const shortString = generateRandomString();
   addToDatabase(urlDatabase, shortString, req.body['longURL']);
-  res.redirect(`/urls/${shortString}`);
+  res.redirect('/urls');
 
 });
 
@@ -114,8 +111,8 @@ app.post("/urls/:shortURL/delete", (req, res)=> {
 //======================================================================================================================================================================
 //==============================================="POST" ROUTES TO TAKE CARE OF COOKIES AND LOGING ACTIVITIES==============================================================
 //======================================================================================================================================================================
-// A POST route to submit username to save cookies:
 
+// A POST route to submit username to save cookies:
 app.post('/login', (req, res) => {
 
   let username = req.body.username;
@@ -134,10 +131,21 @@ app.post('/logout', (req, res) => {
 
 })
 
+//A POST route for registration:
+app.post('/register', (req, res)=> {
+
+  const {email, password} = req.body
+  const id = getUniqID(users);
+  if(addUser({data:users, email, password, id}) !==  null) {
+    console.log(users);
+    res.redirect('/urls')
+  }
+  
+});
+
 //======================================================================================================================================================================
 //=====================================================================Listening Server=================================================================================
 //======================================================================================================================================================================
-
 
 //Begin listening via PORT
 app.listen(PORT, () => {
