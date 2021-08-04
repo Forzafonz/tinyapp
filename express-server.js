@@ -6,7 +6,7 @@ const PORT = 8080;
 //Middleware set-up
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}));
-// app.use(cookieParser);
+app.use(cookieParser());
 
 const urlDatabase = {
 
@@ -50,18 +50,20 @@ const removeFromDatabase = function(shortURL) {
     return false;
   }
   delete urlDatabase[shortURL];
+
 };
 
 // A basic redirect for an empty resource request
 app.get("/", (req, res) => {
 
   res.redirect('/urls/new');
+
 });
 
 //A get request to show a list of all shortURL and longURL in the "database"
 app.get("/urls", (req, res) => {
-
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"]};
+  console.log(req.cookies)
+  const templateVars = { urls: urlDatabase, 'username': req.cookies};
   res.render('urls_index.ejs', templateVars);
 
 });
@@ -69,15 +71,15 @@ app.get("/urls", (req, res) => {
 //A get request used to direct a client to a template which allows creation of new shortURL - longURL pair
 app.get("/urls/new", (req, res) =>{
 
-  const templateVar = { username: req.cookies["username"]};
+  const templateVar = { 'username': req.cookies["username"]};
   res.render('urls_new', templateVar);
-  
+
 });
 
 //A get request which shows information about specified shortURL
 app.get("/urls/:shortURL", (req, res) => {
 
-  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL], username: req.cookies["username"]};
+  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL], 'username': req.cookies["username"]};
   res.render("urls_show", templateVar);
 
 });
@@ -92,6 +94,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 // POST route to update a longURL for a specified shortURL
 app.post('/urls/:shortID', (req, res) => {
+
   let updateVal = req.params.shortID;
 
   if (getFromDatabase(updateVal)) {
@@ -130,12 +133,21 @@ app.post("/urls/:shortURL/delete", (req, res)=> {
 
 // A post route to submit username to save cookies:
 app.post('/login', (req, res) => {
-  // console.log(req.cookies.uName)
+
   let username = req.body.username;
   res
     .cookie('username', username)
-    .cookie('port', PORT)
     .redirect('/urls');
+
+})
+
+// A ost route to logout and clear cookies:
+app.post('/logout', (req, res) => {
+
+  res
+  .clearCookie('username')
+  .redirect('/urls');
+
 })
 
 //Begin listening via PORT
