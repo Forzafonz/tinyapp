@@ -2,7 +2,8 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const {users, urlDatabase} = require("./helpers/data");
 const {PORT} = require("./helpers/constants");
-const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID} = require('./helpers/functions');
+const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists} = require('./helpers/functions');
+const e = require("express");
 
 //Express and its Middleware set-up
 
@@ -10,6 +11,7 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use( express.static( "public" ) );
 
 //======================================================================================================================================================================
 //==============================================="GET" ROUTES FOR OPERATIONS WITH longURL and shortURL==================================================================
@@ -27,7 +29,7 @@ app.get("/urls", (req, res) => {
 
   const id = extractID(req.cookies)
   console.log("req cookies", req.cookies, "id", id);
-  const templateVars = { urls: urlDatabase, 'userid': id};
+  const templateVars = { urls: urlDatabase, 'userid': id, users};
   res.render('urls_index.ejs', templateVars);
 
 });
@@ -36,7 +38,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) =>{
 
   const id = extractID(req.cookies)
-  const templateVar = { 'userid': id};
+  const templateVar = { 'userid': id, users};
   res.render('urls_new', templateVar);
 
 });
@@ -46,7 +48,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
   const id = extractID(req.cookies)
 
-  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL], 'userid': id};
+  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL], 'userid': id, users};
   res.render("urls_show", templateVar);
 
 });
@@ -95,7 +97,7 @@ app.post("/urls", (req, res) => {
 
 });
 
-//A POST route to edit existing shortURL - longURL pair
+// A POST route to edit existing shortURL - longURL pair
 app.post("/urls/:shortURL", (req, res)=> {
 
   let toRemove = req.params.shortURL;
@@ -104,7 +106,7 @@ app.post("/urls/:shortURL", (req, res)=> {
 
 });
 
-//A POST route to remove existing shortURL - longURL pair
+// A POST route to remove existing shortURL - longURL pair
 app.post("/urls/:shortURL/delete", (req, res)=> {
 
   let toRemove = req.params.shortURL;
@@ -142,10 +144,18 @@ app.post('/logout', (req, res) => {
 
 });
 
-//A POST route for registration:
+// A POST route for registration:
 app.post('/register', (req, res)=> {
 
   const {email, password} = req.body;
+  console.log(email, password)
+  if (email === '' || password === '' || userExists({email, users}) === true) {
+    res.
+      status(400)
+      .render('urls_registration-error');
+    return;
+  }
+
   const id = getUniqID(users);
   if (addUser({data:users, email, password, id}) !==  null) {
     console.log(users);
