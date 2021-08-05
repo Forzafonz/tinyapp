@@ -16,13 +16,12 @@ const generateRandomString = function() {
 const addToDatabase = function(urlDatabase, shortUrl, longUrl, id) {
 
   urlDatabase[shortUrl] = {longURL:longUrl, userID: id} ;
-  console.log(urlDatabase)
+
 };
 
 // Function returns longURL from the database based on shortURL
 const getFromDatabase = function({urlDatabase, shortURL}) {
-  console.log("sURL", shortURL)
-  console.log("Database", urlDatabase)
+
   if (urlDatabase[shortURL] === 'undefined') {
     return false;
   }
