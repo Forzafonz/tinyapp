@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <title>TinyApp</title>
+</head>
+
+<%- include('partials/_header_reg') %>
+
+<body>
+  <div style = 'display:flex; top:0; bottom:0; right:0; left:0;'>
+    <div style = "margin:auto;">
+      <div>
+        <img src = "/welcome.png" alt="registration error">
+        </div>
+        <div style="position: absolute; top: 20%; left: 51%; transform: translate( -50%, -50% ); text-align: center; font-weight: bold;"><p><%=    message %></p></div>
+        <div class="row">
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="text-align:center;">
+            <form method="GET" action="/register">
+            <input type="submit" value="Registration" class="btn btn-info btn-lg"></form>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="text-align:center;">
+            <form method="GET" action="/login">
+            <input type="submit" value="     Login     " class="btn btn-info btn-lg"></form>
+          </div>
+          </div>
+      </div>
+      
+    </div>
+  </div>
+
+
+  <%- include('partials/_footer') %>
