@@ -1,9 +1,10 @@
+const {letters, numbers} = require('../helpers/constants')
+
 //Function to generate random strings which will be used as an shortURL
 const generateRandomString = function() {
 
-  const letters = 'abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ';
   let random = [];
-  for (let i = 0; i < 6; i++) random.push(Math.floor(Math.random() * 53));
+  for (let i = 0; i < 6; i++) random.push(Math.floor(Math.random() * 52));
   let result = random.map(element => {
     return letters[element];
   });
@@ -39,9 +40,21 @@ const removeFromDatabase = function(urlDatabase, shortURL) {
 
 // Function to generate userID:
 const getUniqID = function (data){
-  let uniqueKey = `user${Math.floor(Math.random() * 100)}randomID`;
-  if (data[uniqueKey] === undefined) return uniqueKey;
-  return getUniqID();
+
+  let uniqueKey = [];
+  let symbols = letters + numbers;
+  for (let i = 0; i < 6; i++) uniqueKey.push(Math.floor(Math.random() * 62));
+  let uniqueKey = random.map(element => {
+    return symbols[element];
+  });
+  if (data[uniqueKey.join('')] === undefined){
+
+    return uniqueKey.join('');
+    
+  } else {
+    return getUniqID(data);
+  } 
+
 }
 
 //Function to add user to "database":
