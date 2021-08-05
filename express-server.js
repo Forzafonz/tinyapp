@@ -28,7 +28,6 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
 
   const id = extractID(req.cookies)
-  console.log("req cookies", req.cookies, "id", id);
   const templateVars = { urls: urlDatabase, 'userid': id, users};
   res.render('urls_index.ejs', templateVars);
 
@@ -65,10 +64,17 @@ app.get("/u/:shortURL", (req, res) => {
 //==============================================="GET" ROUTES TO TAKE CARE OF COOKIES AND LOGING ACTIVITIES==============================================================
 //======================================================================================================================================================================
 
-// A GET route to show registration page
+// A GET route to show registration page:
 app.get('/register', (req, res) => {
 
   res.render("urls_register");
+
+});
+
+// A GET route to show login page:
+app.get('/login', (req, res) => {
+
+  res.render("urls_login");
 
 });
 
@@ -148,7 +154,6 @@ app.post('/logout', (req, res) => {
 app.post('/register', (req, res)=> {
 
   const {email, password} = req.body;
-  console.log(email, password)
   if (email === '' || password === '') {
     res
       .status(400)
@@ -162,7 +167,6 @@ app.post('/register', (req, res)=> {
 
   const id = getUniqID(users);
   if (addUser({data:users, email, password, id}) !==  null) {
-    console.log(users);
     res.redirect('/urls');
   }
   
