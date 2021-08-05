@@ -37,6 +37,14 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) =>{
 
   const id = extractID(req.cookies)
+
+  if (id === null) {
+    res
+    .status(403)
+    .render('urls_registration-error', {error: "Error 403: You need to be registered and logged in order to be able to create new short URLs!"});
+    return;
+  }
+
   const templateVar = { 'userid': id, users};
   res.render('urls_new', templateVar);
 
