@@ -13,19 +13,21 @@ const generateRandomString = function() {
 };
 
 //Function which is used to add/update longUrl in the database based on shortUrl
-const addToDatabase = function(urlDatabase, shortUrl, longUrl) {
+const addToDatabase = function(urlDatabase, shortUrl, longUrl, id) {
 
-  urlDatabase[shortUrl] = longUrl;
-
+  urlDatabase[shortUrl] = {longURL:longUrl, userID: id} ;
+  console.log(urlDatabase)
 };
 
 // Function returns longURL from the database based on shortURL
-const getFromDatabase = function(urlDatabase, shortURL) {
-
+const getFromDatabase = function({urlDatabase, shortURL}) {
+  console.log("sURL", shortURL)
+  console.log("Database", urlDatabase)
   if (urlDatabase[shortURL] === 'undefined') {
     return false;
   }
-  return urlDatabase[shortURL];
+  return urlDatabase[shortURL]['longURL'];
+
 };
 
 // Function which removes longURL and shortURL pair from the database
@@ -44,7 +46,7 @@ const getUniqID = function (data){
   let uniqueKey = [];
   let symbols = letters + numbers;
   for (let i = 0; i < 6; i++) uniqueKey.push(Math.floor(Math.random() * 62));
-  let uniqueKey = random.map(element => {
+  uniqueKey = uniqueKey.map(element => {
     return symbols[element];
   });
   if (data[uniqueKey.join('')] === undefined){
@@ -102,7 +104,7 @@ const userExists = function ({email, users}) {
 // Function to get a longURL from urlDatabase using shortURL:
 
 const getLongUrl = function (data, shortURL) {
-  return data[shortURL][longURL];
+  return data[shortURL]['longURL'];
 }
 
 module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, getLongUrl}
