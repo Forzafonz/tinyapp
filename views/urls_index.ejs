@@ -35,8 +35,11 @@
 
           <th scope="col" style="text-align:center">Edit</th>
           <th scope="col" style="text-align:center">Delete</th>
+          
 
           <% } %>
+
+          <th scope="col" style="text-align:center">Go to Website</th>
 
         </tr>
       </thead>
@@ -53,6 +56,8 @@
             <td style="text-align:center"><form method="POST" action="/urls/<%= url %>/delete"><input type="submit" value="Delete" class="btn btn-danger"></form></td>
             
             <% } %>
+
+            <td style="text-align:center"><form method="GET" action="/u/<%= url %>"><input type="submit" value="Redirect" class="btn btn-success" formtarget="_blank"></form></td>
 
           </tr>
 
