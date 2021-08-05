@@ -12,12 +12,12 @@
 <%- include('partials/_header_reg') %>
 
 <body>
-  <div style = 'display:flex; position:absolute; top:0; bottom:0; right:0; left:0;'>
+  <div style = 'display:flex; top:0; bottom:0; right:0; left:0;'>
     <div style = "margin:auto;">
       <div>
-        <img src = "regerror.png" alt="registration error">
+        <img src = "/regerror.png" alt="registration error">
         </div>
-        <div style="position: absolute; top: 30%; left: 50%; transform: translate( -50%, -50% ); text-align: center; font-weight: bold;"><p><%= error %></p></div>
+        <div style="position: absolute; top: 20%; left: 50%; transform: translate( -50%, -50% ); text-align: center; font-weight: bold;"><p><%= error %></p></div>
         <div class="row">
           <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="text-align:center;">
             <form method="GET" action="/register">
