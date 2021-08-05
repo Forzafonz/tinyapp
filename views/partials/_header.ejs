@@ -10,11 +10,13 @@
         <a class="nav-link" href="/urls/new"><b>Create New URL</b></a>
       </div>
         <% if (userid === null) { %>
-        <form method="POST" action="/login" class = "form-inline my-2 my-lg-0"><input type="email" name = 'email' id = 'Username' value = "" placeholder = "Username" class= "form-control">
-        <input type="submit" value="Log In" class="btn btn-secondary"></form>
+        <form method="GET" action="/login" class = "form-inline mr-5 my-lg-0">
+        <input type="submit" value="  Log In  " class="btn btn-outline-dark btn-lg"></form>
+        <form method="GET" action="/register" class = "form-inline mr-5 my-lg-0">
+        <input type="submit" value="Register" class="btn btn-outline-dark btn-lg"></form>
         <% } else { %>
-        <div align = "center"><div class = "w-100 p-2 form-inline my-2 my-lg-0">You Are Logged In As :    <%=  users[userid]['email']%></div></div>
-        <form method="POST" action="/logout"><input type="submit" value="Log Out" class="btn btn-warning"></form></td>
+        <div align = "center"><div class = "w-100 p-2 form-inline my-2 my-lg-0">You Are Logged As :    <%=  users[userid]['email']%></div></div>
+        <form method="POST" action="/logout"><input type="submit" value="Log Out" class="btn btn-outline-dark btn-lg"></form></td>
         <% } %>
     </div>
   </nav>
