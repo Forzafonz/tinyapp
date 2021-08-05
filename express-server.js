@@ -2,7 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const {users, urlDatabase} = require("./helpers/data");
 const {PORT} = require("./helpers/constants");
-const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists} = require('./helpers/functions');
+const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser} = require('./helpers/functions');
 
 //Express and its Middleware set-up
 
@@ -39,9 +39,10 @@ app.get("/", (req, res) => {
 
 //A GET route to show a list of all shortURL and longURL in the "database"
 app.get("/urls", (req, res) => {
-
+  
   const id = extractID(req.cookies)
-  const templateVars = { urls: urlDatabase, 'userid': id, users};
+  const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
+  const templateVars = { urls: urlDatabaseFiltered, 'userid': id, users};
 
   if (id) {
 
@@ -84,9 +85,19 @@ app.get("/urls/new", (req, res) =>{
 app.get("/urls/:shortURL", (req, res) => {
 
   const id = extractID(req.cookies)
+  const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
+
+  if (urlDatabase[req.params.shortURL]['userID'] !== id) {
+
+    res
+    .status(403)
+    .render('urls_prohibited', {error: "Error 403: You don't have permissions to modify this link"});
+    return;
+  } 
+
   if (id) {
 
-  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': getFromDatabase({urlDatabase, shortURL: req.params.shortURL}), 'userid': id, users};
+  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': getFromDatabase({'urlDatabase':urlDatabaseFiltered, shortURL: req.params.shortURL}), 'userid': id, users};
   res
   .status(200)
   .render("urls_show", templateVar);
@@ -95,7 +106,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
     res
     .status(401)
-    .render('urls_registration-error', {error: "Error 403: You need to be logged to be able to see information about the link"});
+    .render('urls_registration-error', {error: "Error 401: You need to be logged to be able to see information about the link"});
     return;
 
   }
@@ -105,8 +116,13 @@ app.get("/urls/:shortURL", (req, res) => {
 //A  GET route to redirect a user to a website using a shortURL
 app.get("/u/:shortURL", (req, res) => {
 
+ 
   const longURL = getFromDatabase({urlDatabase, shortURL: req.params.shortURL});
-  if (longURL) res.redirect(longURL);
+  if (longURL) {
+  res
+  .status(200)
+  .redirect(longURL);
+  }
 
 });
 
@@ -117,14 +133,18 @@ app.get("/u/:shortURL", (req, res) => {
 // A GET route to show registration page:
 app.get('/register', (req, res) => {
 
-  res.status(200).render("urls_register");
+  res
+  .status(200)
+  .render("urls_register");
 
 });
 
 // A GET route to show login page:
 app.get('/login', (req, res) => {
 
-  res.render("urls_login");
+  res
+  .status(200)
+  .render("urls_login");
 
 });
 
@@ -137,10 +157,20 @@ app.post('/urls/:shortID', (req, res) => {
 
   let updateVal = req.params.shortID;
   const id = extractID(req.cookies)
+  const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
+
+  if (urlDatabase[updateVal]['userID'] !== id) {
+
+    res
+    .status(403)
+    .render('urls_prohibited', {error: "Error 403: You don't have permissions to modify this link"});
+    return;
+
+  } 
 
   if (id) {
     // if the link specified by user to modify in the database, then we modify it and re-direct a user back to main page. Else we show them error-page
-    if (getFromDatabase({urlDatabase, shortURL:updateVal})) {
+    if (getFromDatabase({'urlDatabase':urlDatabaseFiltered, shortURL:updateVal})) {
 
       addToDatabase(urlDatabase, updateVal, req.body.longURL, id );
 
@@ -170,11 +200,12 @@ app.post('/urls/:shortID', (req, res) => {
 app.post("/urls", (req, res) => {
 
   const id = extractID(req.cookies)
+  const templateVars = { urls: urlDatabase, 'userid': id, users};
 
   if (id === null) {  
 
     res
-    .status(403)
+    .status(401)
     .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to generate newID!` });
 
  }  else {
@@ -183,7 +214,7 @@ app.post("/urls", (req, res) => {
     const shortString = generateRandomString();
     addToDatabase(urlDatabase, shortString, req.body.longURL, id);
     res
-    .status(200)
+    .status(201)
     .redirect('/urls');
     
   }
@@ -194,17 +225,27 @@ app.post("/urls/:shortURL", (req, res)=> {
 
   const id = extractID(req.cookies);
   let toEdit = req.params.shortURL;
+  const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
+
+  if (urlDatabase[toEdit]['userID'] !== id) {
+
+    res
+    .status(403)
+    .render('urls_prohibited', {error: "Error 403: You don't have permissions to edit this link"});
+    return;
+
+  } 
 
   if (id === null) {  
 
     res
-    .status(403)
+    .status(401)
     .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to edit existing URL: ${toEdit}` });
 
  }  else {
 
     
-    removeFromDatabase(urlDatabase, toEdit);
+    removeFromDatabase(urlDatabaseFiltered, toEdit);
     res
     .status(200)
     .redirect('/urls');
@@ -219,15 +260,23 @@ app.post("/urls/:shortURL/delete", (req, res)=> {
   const id = extractID(req.cookies);
   let toRemove = req.params.shortURL;
 
-  if (id === null) {  
+  if (urlDatabase[toRemove]['userID'] !== id) {
 
     res
     .status(403)
+    .render('urls_prohibited', {error: "Error 403: You don't have permissions to remove this link"});
+    return;
+
+  } 
+
+  if (id === null) {  
+
+    res
+    .status(401)
     .render('urls_registration-error', {error: `Error 401: You need to be logged in to be able to remove this URL: ${toRemove}`});
 
  }  else {
 
-  
   removeFromDatabase(urlDatabase, toRemove);
   res
     .status(200)
@@ -249,8 +298,8 @@ app.post('/login', (req, res) => {
   
   if (email === "") {
     res
-      .status(403)
-      .render('urls_registration-error', {error: "Error 403: E-mail cannot be blank please try again!"});
+      .status(400)
+      .render('urls_registration-error', {error: "Error 400: E-mail cannot be blank please try again!"});
       return;
   }
   
@@ -258,10 +307,11 @@ app.post('/login', (req, res) => {
 
     if (users[userID]['password'] !== password) {
       res
-      .status(403)
-      .render('urls_registration-error', {error: "Error 403: The username and password you entered did not match our records. Please double-check and try again!"});
+      .status(400)
+      .render('urls_registration-error', {error: "Error 400: The username and password you entered did not match our records. Please double-check and try again!"});
       return;
     }
+  //filter database to show only URLs created by user:
 
   res
     .cookie('userid', userID)
@@ -269,8 +319,8 @@ app.post('/login', (req, res) => {
 
   } else {
     res
-      .status(403)
-      .render('urls_registration-error', {error: "Error 403: Unfortunately there is no user with this email address!"});
+      .status(400)
+      .render('urls_registration-error', {error: "Error 400: Unfortunately there is no user with this email address!"});
       return;
   }
 
