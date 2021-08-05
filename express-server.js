@@ -2,7 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const {users, urlDatabase} = require("./helpers/data");
 const {PORT} = require("./helpers/constants");
-const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists} = require('./helpers/functions');
+const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, getLongUrl} = require('./helpers/functions');
 const e = require("express");
 
 //Express and its Middleware set-up
@@ -53,7 +53,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
   const id = extractID(req.cookies)
 
-  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': urlDatabase[req.params.shortURL], 'userid': id, users};
+  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': getFromDatabase({urlDatabase, shortURL: req.params.shortURL}), 'userid': id, users};
   res.render("urls_show", templateVar);
 
 });
@@ -61,7 +61,7 @@ app.get("/urls/:shortURL", (req, res) => {
 //A  GET route to redirect a user to a website using a shortURL
 app.get("/u/:shortURL", (req, res) => {
 
-  const longURL = getFromDatabase(urlDatabase, req.params.shortURL);
+  const longURL = getFromDatabase({urlDatabase, shortURL: req.params.shortURL});
   if (longURL) res.redirect(longURL);
 
 });
@@ -92,9 +92,10 @@ app.get('/login', (req, res) => {
 app.post('/urls/:shortID', (req, res) => {
 
   let updateVal = req.params.shortID;
+  const id = extractID(req.cookies)
 
-  if (getFromDatabase(urlDatabase, updateVal)) {
-    addToDatabase(urlDatabase, updateVal, req.body.longURL);
+  if (getFromDatabase({urlDatabase, shortURL:updateVal})) {
+    addToDatabase(urlDatabase, updateVal, req.body.longURL, id );
   }
   res.redirect("/urls");
 
@@ -103,8 +104,9 @@ app.post('/urls/:shortID', (req, res) => {
 // A POST route to generate and add a new shortURL - longURL pair to database
 app.post("/urls", (req, res) => {
 
+  const id = extractID(req.cookies)
   const shortString = generateRandomString();
-  addToDatabase(urlDatabase, shortString, req.body['longURL']);
+  addToDatabase(urlDatabase, shortString, req.body.longURL, id);
   res.redirect('/urls');
 
 });
