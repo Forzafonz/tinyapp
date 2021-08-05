@@ -99,4 +99,10 @@ const userExists = function ({email, users}) {
   return false;
 }
 
-module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists}
+// Function to get a longURL from urlDatabase using shortURL:
+
+const getLongUrl = function (data, shortURL) {
+  return data[shortURL][longURL];
+}
+
+module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, getLongUrl}
