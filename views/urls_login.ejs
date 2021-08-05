@@ -16,9 +16,26 @@
 <div style = "margin:auto;">
 <form action = "/login" method = "POST">
   <div class="form-group">
-    <label for="emailID"><b>Email address</b></label>
-    <input type="email" class="form-control" id="emailID" aria-describedby="emailHelp" placeholder="Enter your email to login" name = "email">
-    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+    <label for="emailID"><b><h2>Please enter your email and </h2></b></label>
+    <h2>password to login</h2><br><br>
+    <form method = "PUT" action = "/login">
+    <input type="email" class="form-control" id="emailID" aria-describedby="emailHelp" placeholder="Your email" name = "email">
+    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small><br>
+    <div class="form-group">
+      <input type="password" class="form-control" id="inputPassword" placeholder="Your Password" name = "password"><br>
+    </div>
+    <input type="submit" value="Login" class="btn btn-outline-success btn-lg"></form>
+    <br><br><br><br>
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="text-align:center;">
+        <form method="GET" action="/register">
+        <input type="submit" value="Back to Registration" class="btn btn-success"></form>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-5" style="text-align:center;">
+        <form method="GET" action="/urls">
+        <input type="submit" value="    Back to URLs     " class="btn btn-success"></form>
+      </div>
+      </div>
   </div>
 </form>
 </div>
