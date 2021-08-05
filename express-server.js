@@ -14,7 +14,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']}));
-app.use( express.static( "public" ) );
+app.use(express.static("public"));
 
 //======================================================================================================================================================================
 //==============================================="GET" ROUTES FOR OPERATIONS WITH longURL and shortURL==================================================================
@@ -28,14 +28,14 @@ app.get("/", (req, res) => {
   if (id) {
 
     res
-    .status(200)
-    .redirect('/urls')
+      .status(200)
+      .redirect('/urls');
 
   } else {
 
-  res
-  .status(401)
-  .render('welcome', {message: "Please login or register in order to be able to see links"});
+    res
+      .status(401)
+      .render('welcome', {message: "Please login or register in order to be able to see links"});
 
   }
 
@@ -44,21 +44,21 @@ app.get("/", (req, res) => {
 //A GET route to show a list of all shortURL and longURL in the "database"
 app.get("/urls", (req, res) => {
   
-  const id = extractID(req.session)
+  const id = extractID(req.session);
   const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
   const templateVars = { urls: urlDatabaseFiltered, 'userid': id, users};
 
   if (id) {
 
-  res
-  .status(200)
-  .render('urls_index.ejs', templateVars);
+    res
+      .status(200)
+      .render('urls_index.ejs', templateVars);
   
   } else {
 
-  res
-  .status(401)
-  .render('welcome', {message: "Please login or register in order to be able to see links"});
+    res
+      .status(401)
+      .render('welcome', {message: "Please login or register in order to be able to see links"});
   
   }
 
@@ -67,50 +67,50 @@ app.get("/urls", (req, res) => {
 //A GET route used to direct a client to a template which allows creation of new shortURL - longURL pair
 app.get("/urls/new", (req, res) =>{
 
-  const id = extractID(req.session)
+  const id = extractID(req.session);
   
 
   if (id === null) {
 
     res
-    .status(401)
-    .render('urls_registration-error', {error: "Error 403: You need to be logged to be able to create new short URLs!"});
+      .status(401)
+      .render('urls_registration-error', {error: "Error 403: You need to be logged to be able to create new short URLs!"});
     return;
   }
 
   const templateVar = { 'userid': id, users};
   res
-  .status(200)
-  .render('urls_new', templateVar);
+    .status(200)
+    .render('urls_new', templateVar);
 
 });
 
 //A GET route which shows information about specified shortURL
 app.get("/urls/:shortURL", (req, res) => {
 
-  const id = extractID(req.session)
+  const id = extractID(req.session);
   const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
 
   if (urlDatabase[req.params.shortURL]['userID'] !== id) {
 
     res
-    .status(403)
-    .render('urls_prohibited', {error: "Error 403: You don't have permissions to modify this link"});
+      .status(403)
+      .render('urls_prohibited', {error: "Error 403: You don't have permissions to modify this link"});
     return;
-  } 
+  }
 
   if (id) {
 
-  const templateVar = { 'shortURL': req.params.shortURL, 'longURL': getFromDatabase({'urlDatabase':urlDatabaseFiltered, shortURL: req.params.shortURL}), 'userid': id, users};
-  res
-  .status(200)
-  .render("urls_show", templateVar);
+    const templateVar = { 'shortURL': req.params.shortURL, 'longURL': getFromDatabase({'urlDatabase':urlDatabaseFiltered, shortURL: req.params.shortURL}), 'userid': id, users};
+    res
+      .status(200)
+      .render("urls_show", templateVar);
 
   } else {
 
     res
-    .status(401)
-    .render('urls_registration-error', {error: "Error 401: You need to be logged to be able to see information about the link"});
+      .status(401)
+      .render('urls_registration-error', {error: "Error 401: You need to be logged to be able to see information about the link"});
     return;
 
   }
@@ -123,9 +123,9 @@ app.get("/u/:shortURL", (req, res) => {
  
   const longURL = getFromDatabase({urlDatabase, shortURL: req.params.shortURL});
   if (longURL) {
-  res
-  .status(200)
-  .redirect(longURL);
+    res
+      .status(200)
+      .redirect(longURL);
   }
 
 });
@@ -138,8 +138,8 @@ app.get("/u/:shortURL", (req, res) => {
 app.get('/register', (req, res) => {
 
   res
-  .status(200)
-  .render("urls_register");
+    .status(200)
+    .render("urls_register");
 
 });
 
@@ -147,8 +147,8 @@ app.get('/register', (req, res) => {
 app.get('/login', (req, res) => {
 
   res
-  .status(200)
-  .render("urls_login");
+    .status(200)
+    .render("urls_login");
 
 });
 
@@ -160,41 +160,41 @@ app.get('/login', (req, res) => {
 app.post('/urls/:shortID', (req, res) => {
 
   let updateVal = req.params.shortID;
-  const id = extractID(req.session)
+  const id = extractID(req.session);
   const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
 
   if (urlDatabase[updateVal]['userID'] !== id) {
 
     res
-    .status(403)
-    .render('urls_prohibited', {error: "Error 403: You don't have permissions to modify this link"});
+      .status(403)
+      .render('urls_prohibited', {error: "Error 403: You don't have permissions to modify this link"});
     return;
 
-  } 
+  }
 
   if (id) {
     // if the link specified by user to modify in the database, then we modify it and re-direct a user back to main page. Else we show them error-page
     if (getFromDatabase({'urlDatabase':urlDatabaseFiltered, shortURL:updateVal})) {
 
-      addToDatabase(urlDatabase, updateVal, req.body.longURL, id );
+      addToDatabase(urlDatabase, updateVal, req.body.longURL, id);
 
     } else {
 
       res
-      .status(401)
-      .render('urls_registration-error', {error: `Error 404: There is no such link in our database`});
+        .status(401)
+        .render('urls_registration-error', {error: `Error 404: There is no such link in our database`});
       return;
     }
 
-  res
-  .status(200)
-  .redirect("/urls");
+    res
+      .status(200)
+      .redirect("/urls");
 
   } else {
 
     res
-     .status(401)
-     .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to update the shortID: ${updateVal}` });
+      .status(401)
+      .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to update the shortID: ${updateVal}` });
 
   }
 
@@ -203,23 +203,22 @@ app.post('/urls/:shortID', (req, res) => {
 // A POST route to generate and add a new shortURL - longURL pair to database
 app.post("/urls", (req, res) => {
 
-  const id = extractID(req.session)
-  const templateVars = { urls: urlDatabase, 'userid': id, users};
+  const id = extractID(req.session);
 
-  if (id === null) {  
+  if (id === null) {
 
     res
-    .status(401)
-    .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to generate newID!` });
+      .status(401)
+      .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to generate newID!` });
 
- }  else {
+  }  else {
 
     
     const shortString = generateRandomString();
     addToDatabase(urlDatabase, shortString, req.body.longURL, id);
     res
-    .status(201)
-    .redirect('/urls');
+      .status(201)
+      .redirect('/urls');
     
   }
 });
@@ -234,27 +233,27 @@ app.post("/urls/:shortURL", (req, res)=> {
   if (urlDatabase[toEdit]['userID'] !== id) {
 
     res
-    .status(403)
-    .render('urls_prohibited', {error: "Error 403: You don't have permissions to edit this link"});
+      .status(403)
+      .render('urls_prohibited', {error: "Error 403: You don't have permissions to edit this link"});
     return;
 
-  } 
+  }
 
-  if (id === null) {  
+  if (id === null) {
 
     res
-    .status(401)
-    .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to edit existing URL: ${toEdit}` });
+      .status(401)
+      .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to edit existing URL: ${toEdit}` });
 
- }  else {
+  }  else {
 
     
     removeFromDatabase(urlDatabaseFiltered, toEdit);
     res
-    .status(200)
-    .redirect('/urls');
+      .status(200)
+      .redirect('/urls');
   
- }   
+  }
 
 });
 
@@ -267,26 +266,26 @@ app.post("/urls/:shortURL/delete", (req, res)=> {
   if (urlDatabase[toRemove]['userID'] !== id) {
 
     res
-    .status(403)
-    .render('urls_prohibited', {error: "Error 403: You don't have permissions to remove this link"});
+      .status(403)
+      .render('urls_prohibited', {error: "Error 403: You don't have permissions to remove this link"});
     return;
 
-  } 
+  }
 
-  if (id === null) {  
+  if (id === null) {
 
     res
-    .status(401)
-    .render('urls_registration-error', {error: `Error 401: You need to be logged in to be able to remove this URL: ${toRemove}`});
+      .status(401)
+      .render('urls_registration-error', {error: `Error 401: You need to be logged in to be able to remove this URL: ${toRemove}`});
 
- }  else {
+  }  else {
 
-  removeFromDatabase(urlDatabase, toRemove);
-  res
-    .status(200)
-    .redirect('/urls');
+    removeFromDatabase(urlDatabase, toRemove);
+    res
+      .status(200)
+      .redirect('/urls');
 
- }
+  }
 
 });
 
@@ -304,27 +303,27 @@ app.post('/login', (req, res) => {
     res
       .status(400)
       .render('urls_registration-error', {error: "Error 400: E-mail cannot be blank please try again!"});
-      return;
+    return;
   }
   
   if (userID !== null) {
   
-    if (!bcrypt.compareSync(password, users[userID]['password'])){
+    if (!bcrypt.compareSync(password, users[userID]['password'])) {
       res
-      .status(400)
-      .render('urls_registration-error', {error: "Error 400: The username and password you entered did not match our records. Please double-check and try again!"});
+        .status(400)
+        .render('urls_registration-error', {error: "Error 400: The username and password you entered did not match our records. Please double-check and try again!"});
       return;
     }
-  //filter database to show only URLs created by user:
-  req.session.userid = userID
-  res
-    .redirect('/urls');
+    //filter database to show only URLs created by user:
+    req.session.userid = userID;
+    res
+      .redirect('/urls');
 
   } else {
     res
       .status(400)
       .render('urls_registration-error', {error: "Error 400: Unfortunately there is no user with this email address!"});
-      return;
+    return;
   }
 
 });
@@ -349,8 +348,8 @@ app.post('/register', (req, res)=> {
     return;
   } else if (userExists({email, users}) === true) {
     res
-    .status(400)
-    .render('urls_registration-error', {error: "Error 400: User with this email already exists!"});
+      .status(400)
+      .render('urls_registration-error', {error: "Error 400: User with this email already exists!"});
   }
 
   const id = getUniqID(users);
