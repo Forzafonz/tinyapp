@@ -22,8 +22,7 @@ const addToDatabase = function(urlDatabase, shortUrl, longUrl, id) {
 
 // Function returns longURL from the database based on shortURL
 const getFromDatabase = function({urlDatabase, shortURL}) {
-  console.log(urlDatabase)
-  console.log(shortURL)
+
   if (urlDatabase[shortURL] === 'undefined') {
     return false;
   }
@@ -114,9 +113,7 @@ const urlsForUser = function ({data, userID}) {
   let urlsForUser = {};
   let showKeys = Object.keys(data)
                        .filter(key => {
-                         console.log(data[key])
-                         if (data[key]['userID'] === userID) {return true} })
-        console.log(showKeys)                  
+                         if (data[key]['userID'] === userID) {return true} })               
         if (showKeys.length > 0) {
         showKeys.forEach(key => {
           urlsForUser[key] = data[key];
@@ -124,7 +121,7 @@ const urlsForUser = function ({data, userID}) {
       } else {
         return null;
       }
-      console.log(urlsForUser);
+
   return urlsForUser;
 }
 
