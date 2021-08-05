@@ -20,8 +20,11 @@ const urlDatabase = {
   "9sm5xK": {
     longURL: "http://www.google.com",
     userID: "userRandomID"
+  },
+  "sgq3y6": {
+    longURL: "https://support.mozilla.org/en-US/products/firefox",
+    userID: "userRandomID"
   }
 }
-
 
 module.exports = {users, urlDatabase}
