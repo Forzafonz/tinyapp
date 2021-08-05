@@ -128,15 +128,34 @@ app.post("/urls/:shortURL/delete", (req, res)=> {
 // A POST route to submit username to save cookies:
 app.post('/login', (req, res) => {
 
-  const email = req.body.email;
+  const {email, password} = req.body;
   const userID = getUserID({data:users, email});
   
+  if (email === "") {
+    res
+      .status(403)
+      .render('urls_registration-error', {error: "Error 403: E-mail cannot be blank please try again!"});
+      return;
+  }
+  
   if (userID !== null) {
+
+    if (users[userID]['password'] !== password) {
+      res
+      .status(403)
+      .render('urls_registration-error', {error: "Error 403: The username and password you entered did not match our records. Please double-check and try again!"});
+      return;
+    }
 
   res
     .cookie('userid', userID)
     .redirect('/urls');
 
+  } else {
+    res
+      .status(403)
+      .render('urls_registration-error', {error: "Error 403: Unfortunately there is no user with this email address!"});
+      return;
   }
 
 });
@@ -167,7 +186,7 @@ app.post('/register', (req, res)=> {
 
   const id = getUniqID(users);
   if (addUser({data:users, email, password, id}) !==  null) {
-    res.redirect('/urls');
+    res.redirect(307, '/login');
   }
   
 });
