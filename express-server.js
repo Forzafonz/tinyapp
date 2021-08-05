@@ -1,5 +1,5 @@
 const express = require("express");
-const cookieParser = require("cookie-parser");
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const {users, urlDatabase} = require("./helpers/data");
 const {PORT} = require("./helpers/constants");
@@ -11,7 +11,9 @@ const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase,
 const app = express();
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']}));
 app.use( express.static( "public" ) );
 
 //======================================================================================================================================================================
@@ -21,7 +23,7 @@ app.use( express.static( "public" ) );
 // A GET route which redirects from an empty resource request
 app.get("/", (req, res) => {
 
-  const id = extractID(req.cookies);
+  const id = extractID(req.session);
 
   if (id) {
 
@@ -42,7 +44,7 @@ app.get("/", (req, res) => {
 //A GET route to show a list of all shortURL and longURL in the "database"
 app.get("/urls", (req, res) => {
   
-  const id = extractID(req.cookies)
+  const id = extractID(req.session)
   const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
   const templateVars = { urls: urlDatabaseFiltered, 'userid': id, users};
 
@@ -65,7 +67,7 @@ app.get("/urls", (req, res) => {
 //A GET route used to direct a client to a template which allows creation of new shortURL - longURL pair
 app.get("/urls/new", (req, res) =>{
 
-  const id = extractID(req.cookies)
+  const id = extractID(req.session)
   
 
   if (id === null) {
@@ -86,7 +88,7 @@ app.get("/urls/new", (req, res) =>{
 //A GET route which shows information about specified shortURL
 app.get("/urls/:shortURL", (req, res) => {
 
-  const id = extractID(req.cookies)
+  const id = extractID(req.session)
   const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
 
   if (urlDatabase[req.params.shortURL]['userID'] !== id) {
@@ -158,7 +160,7 @@ app.get('/login', (req, res) => {
 app.post('/urls/:shortID', (req, res) => {
 
   let updateVal = req.params.shortID;
-  const id = extractID(req.cookies)
+  const id = extractID(req.session)
   const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
 
   if (urlDatabase[updateVal]['userID'] !== id) {
@@ -201,7 +203,7 @@ app.post('/urls/:shortID', (req, res) => {
 // A POST route to generate and add a new shortURL - longURL pair to database
 app.post("/urls", (req, res) => {
 
-  const id = extractID(req.cookies)
+  const id = extractID(req.session)
   const templateVars = { urls: urlDatabase, 'userid': id, users};
 
   if (id === null) {  
@@ -225,7 +227,7 @@ app.post("/urls", (req, res) => {
 // A POST route to edit existing shortURL - longURL pair
 app.post("/urls/:shortURL", (req, res)=> {
 
-  const id = extractID(req.cookies);
+  const id = extractID(req.session);
   let toEdit = req.params.shortURL;
   const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
 
@@ -259,7 +261,7 @@ app.post("/urls/:shortURL", (req, res)=> {
 // A POST route to remove existing shortURL - longURL pair
 app.post("/urls/:shortURL/delete", (req, res)=> {
 
-  const id = extractID(req.cookies);
+  const id = extractID(req.session);
   let toRemove = req.params.shortURL;
 
   if (urlDatabase[toRemove]['userID'] !== id) {
@@ -306,7 +308,7 @@ app.post('/login', (req, res) => {
   }
   
   if (userID !== null) {
-    console.log(users[userID]['password']);
+  
     if (!bcrypt.compareSync(password, users[userID]['password'])){
       res
       .status(400)
@@ -314,9 +316,8 @@ app.post('/login', (req, res) => {
       return;
     }
   //filter database to show only URLs created by user:
-
+  req.session.userid = userID
   res
-    .cookie('userid', userID)
     .redirect('/urls');
 
   } else {
