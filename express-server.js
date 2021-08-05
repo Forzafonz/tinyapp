@@ -1,8 +1,10 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const bcrypt = require('bcrypt');
 const {users, urlDatabase} = require("./helpers/data");
 const {PORT} = require("./helpers/constants");
 const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser} = require('./helpers/functions');
+
 
 //Express and its Middleware set-up
 
@@ -304,8 +306,8 @@ app.post('/login', (req, res) => {
   }
   
   if (userID !== null) {
-
-    if (users[userID]['password'] !== password) {
+    console.log(users[userID]['password']);
+    if (!bcrypt.compareSync(password, users[userID]['password'])){
       res
       .status(400)
       .render('urls_registration-error', {error: "Error 400: The username and password you entered did not match our records. Please double-check and try again!"});
@@ -351,7 +353,8 @@ app.post('/register', (req, res)=> {
   }
 
   const id = getUniqID(users);
-  if (addUser({data:users, email, password, id}) !==  null) {
+  const hushedPassword = bcrypt.hashSync(password, 10);
+  if (addUser({data:users, email, password:hushedPassword , id}) !==  null) {
     res.redirect(307, '/login');
   }
   
