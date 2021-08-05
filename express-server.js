@@ -42,7 +42,20 @@ app.get("/urls", (req, res) => {
 
   const id = extractID(req.cookies)
   const templateVars = { urls: urlDatabase, 'userid': id, users};
-  res.render('urls_index.ejs', templateVars);
+
+  if (id) {
+
+  res
+  .status(200)
+  .render('urls_index.ejs', templateVars);
+  
+  } else {
+
+  res
+  .status(401)
+  .render('welcome', {message: "Please login or register in order to be able to see links"});
+  
+  }
 
 });
 
@@ -50,14 +63,20 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) =>{
 
   const id = extractID(req.cookies)
-  const templateVar = { 'userid': id, users};
+  
+
   if (id === null) {
+
     res
+    .status(401)
     .render('urls_registration-error', {error: "Error 403: You need to be logged to be able to create new short URLs!"});
     return;
   }
 
-  res.render('urls_new', templateVar);
+  const templateVar = { 'userid': id, users};
+  res
+  .status(200)
+  .render('urls_new', templateVar);
 
 });
 
@@ -65,9 +84,21 @@ app.get("/urls/new", (req, res) =>{
 app.get("/urls/:shortURL", (req, res) => {
 
   const id = extractID(req.cookies)
+  if (id) {
 
   const templateVar = { 'shortURL': req.params.shortURL, 'longURL': getFromDatabase({urlDatabase, shortURL: req.params.shortURL}), 'userid': id, users};
-  res.render("urls_show", templateVar);
+  res
+  .status(200)
+  .render("urls_show", templateVar);
+
+  } else {
+
+    res
+    .status(401)
+    .render('urls_registration-error', {error: "Error 403: You need to be logged to be able to see information about the link"});
+    return;
+
+  }
 
 });
 
@@ -107,10 +138,31 @@ app.post('/urls/:shortID', (req, res) => {
   let updateVal = req.params.shortID;
   const id = extractID(req.cookies)
 
-  if (getFromDatabase({urlDatabase, shortURL:updateVal})) {
-    addToDatabase(urlDatabase, updateVal, req.body.longURL, id );
+  if (id) {
+    // if the link specified by user to modify in the database, then we modify it and re-direct a user back to main page. Else we show them error-page
+    if (getFromDatabase({urlDatabase, shortURL:updateVal})) {
+
+      addToDatabase(urlDatabase, updateVal, req.body.longURL, id );
+
+    } else {
+
+      res
+      .status(401)
+      .render('urls_registration-error', {error: `Error 404: There is no such link in our database`});
+      return;
+    }
+
+  res
+  .status(200)
+  .redirect("/urls");
+
+  } else {
+
+    res
+     .status(401)
+     .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to update the shortID: ${updateVal}` });
+
   }
-  res.redirect("/urls");
 
 });
 
@@ -118,27 +170,70 @@ app.post('/urls/:shortID', (req, res) => {
 app.post("/urls", (req, res) => {
 
   const id = extractID(req.cookies)
-  const shortString = generateRandomString();
-  addToDatabase(urlDatabase, shortString, req.body.longURL, id);
-  res.redirect('/urls');
 
+  if (id === null) {  
+
+    res
+    .status(403)
+    .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to generate newID!` });
+
+ }  else {
+
+    
+    const shortString = generateRandomString();
+    addToDatabase(urlDatabase, shortString, req.body.longURL, id);
+    res
+    .status(200)
+    .redirect('/urls');
+    
+  }
 });
 
 // A POST route to edit existing shortURL - longURL pair
 app.post("/urls/:shortURL", (req, res)=> {
 
-  let toRemove = req.params.shortURL;
-  removeFromDatabase(urlDatabase, toRemove);
-  res.redirect('/urls');
+  const id = extractID(req.cookies);
+  let toEdit = req.params.shortURL;
+
+  if (id === null) {  
+
+    res
+    .status(403)
+    .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to edit existing URL: ${toEdit}` });
+
+ }  else {
+
+    
+    removeFromDatabase(urlDatabase, toEdit);
+    res
+    .status(200)
+    .redirect('/urls');
+  
+ }   
 
 });
 
 // A POST route to remove existing shortURL - longURL pair
 app.post("/urls/:shortURL/delete", (req, res)=> {
 
+  const id = extractID(req.cookies);
   let toRemove = req.params.shortURL;
+
+  if (id === null) {  
+
+    res
+    .status(403)
+    .render('urls_registration-error', {error: `Error 401: You need to be logged in to be able to remove this URL: ${toRemove}`});
+
+ }  else {
+
+  
   removeFromDatabase(urlDatabase, toRemove);
-  res.redirect('/urls');
+  res
+    .status(200)
+    .redirect('/urls');
+
+ }
 
 });
 
