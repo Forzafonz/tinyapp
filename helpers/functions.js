@@ -14,14 +14,15 @@ const generateRandomString = function() {
 
 //Function which is used to add/update longUrl in the database based on shortUrl
 const addToDatabase = function(urlDatabase, shortUrl, longUrl, id) {
-
-  urlDatabase[shortUrl] = {longURL:longUrl, userID: id} ;
+  let standUrl = getLongUrl(longUrl);
+  urlDatabase[shortUrl] = {longURL:standUrl, userID: id} ;
 
 };
 
 // Function returns longURL from the database based on shortURL
 const getFromDatabase = function({urlDatabase, shortURL}) {
-
+  console.log(urlDatabase)
+  console.log(shortURL)
   if (urlDatabase[shortURL] === 'undefined') {
     return false;
   }
@@ -100,10 +101,10 @@ const userExists = function ({email, users}) {
   return false;
 }
 
-// Function to get a longURL from urlDatabase using shortURL:
+// Function to check if a longURL includes http part in it. If not - add it.
 
-const getLongUrl = function (data, shortURL) {
-  return data[shortURL]['longURL'];
+const getLongUrl = function (url) {
+  return url.substring(0,4) === 'http' ? url : 'https://' + url;
 }
 
-module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, getLongUrl}
+module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists}
