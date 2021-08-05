@@ -1,4 +1,5 @@
-const {letters, numbers} = require('../helpers/constants')
+const {letters, numbers} = require('../helpers/constants');
+const { urlDatabase } = require('./data');
 
 //Function to generate random strings which will be used as an shortURL
 const generateRandomString = function() {
@@ -107,4 +108,24 @@ const getLongUrl = function (url) {
   return url.substring(0,4) === 'http' ? url : 'https://' + url;
 }
 
-module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists}
+// Function which returns URLS where the userID is equal to the id of the currently logged-in user:
+
+const urlsForUser = function ({data, userID}) {
+  let urlsForUser = {};
+  let showKeys = Object.keys(data)
+                       .filter(key => {
+                         console.log(data[key])
+                         if (data[key]['userID'] === userID) {return true} })
+        console.log(showKeys)                  
+        if (showKeys.length > 0) {
+        showKeys.forEach(key => {
+          urlsForUser[key] = data[key];
+        })
+      } else {
+        return null;
+      }
+      console.log(urlsForUser);
+  return urlsForUser;
+}
+
+module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser}
