@@ -2,8 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const {users, urlDatabase} = require("./helpers/data");
 const {PORT} = require("./helpers/constants");
-const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, getLongUrl} = require('./helpers/functions');
-const e = require("express");
+const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists} = require('./helpers/functions');
 
 //Express and its Middleware set-up
 
@@ -20,7 +19,21 @@ app.use( express.static( "public" ) );
 // A GET route which redirects from an empty resource request
 app.get("/", (req, res) => {
 
-  res.redirect('/urls/new');
+  const id = extractID(req.cookies);
+
+  if (id) {
+
+    res
+    .status(200)
+    .redirect('/urls')
+
+  } else {
+
+  res
+  .status(401)
+  .render('welcome', {message: "Please login or register in order to be able to see links"});
+
+  }
 
 });
 
@@ -173,7 +186,7 @@ app.post('/logout', (req, res) => {
 
   res
     .clearCookie('userid')
-    .redirect('/urls');
+    .redirect('/');
 
 });
 
