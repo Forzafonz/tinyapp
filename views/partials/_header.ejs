@@ -34,10 +34,15 @@
           <input type="submit" value="Register" class="btn btn-outline-dark btn-lg" id = 'button4'>
         </form>
         <% } else { %>
+        
+          <% if (users[userid] !== undefined) { %>
+        
+            <div align = "center">
+              <div class = "w-100 p-2 form-inline my-2 my-lg-0">You Are Logged As :    <%=  users[userid]['email']%>
+            </div>
+          
+            <% } %>
 
-        <div align = "center">
-          <div class = "w-100 p-2 form-inline my-2 my-lg-0">You Are Logged As :    <%=  users[userid]['email']%>
-          </div>
         </div>
         
         <div>
