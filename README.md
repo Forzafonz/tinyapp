@@ -13,7 +13,10 @@ This is a Full Stack Application which allows users to shorten long URLs much li
 
 # Getting Started
 
-Install all dependencies (_using the `npm install` command)_. Run the development web server using the `node express_server.js` command.
+1. Clone repository in your local folder: `git clone git@github.com:Forzafonz/tinyapp.git tinyApp`
+1. Install all dependencies (_using the `npm install` command)_. 
+1. Run the development web server using the `node express_server.js` command.
+1. Go to `localhost:8080` in your browser of choice
 
 # Screenshots
 ## Langing Page:
