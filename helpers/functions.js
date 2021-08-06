@@ -134,11 +134,11 @@ const urlsForUser = function({data, userID}) {
 
 const hushPasswords = function(data) {
   
-  for (key in data) {
+  for (let key in data) {
     const hushedPassword = bcrypt.hashSync(data[key]['password'], 10);
     data[key]['password'] = hushedPassword;
   }
   
-}
+};
 
 module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser, getLongUrl, hushPasswords };
