@@ -174,3 +174,21 @@ describe(`extractID from cookies file` , () => {
   });
 });
 
+describe(`userExists` , () => {
+
+  it('if a specified email exists in users database return true', function () {
+  
+    const expectedOutput = true // <= used here for consistency only
+    const result = userExists({users, email: "user2@example.com" });
+    assert.isTrue(result, expectedOutput);
+  
+  });
+  
+  it("if a specified email does not exist in users database return false", function () {
+  
+    const expectedOutput = false // <= used here for consistency only
+    const result = userExists({users, email: "user210@example.com" });
+    assert.isFalse(result);
+  
+  });
+});
