@@ -24,9 +24,10 @@ describe('addToDatabase', function () {
         userID: "randomUser"
       }
     }
-    const result = addToDatabase(urlDatabase, "sa2fd2","https://www.youtube.com/watch?v=kzH5RnM2R4g&t=28s&ab_channel=TALLDRAGON", "randomUser");
-    
-    assert.deepEqual(urlDatabase, expectedOutput);
+    let urlDatabaseTest = urlDatabase;
+    const result = addToDatabase(urlDatabaseTest, "sa2fd2","https://www.youtube.com/watch?v=kzH5RnM2R4g&t=28s&ab_channel=TALLDRAGON", "randomUser");
+    assert.deepEqual(urlDatabaseTest, expectedOutput);
+    removeFromDatabase(urlDatabaseTest,"sa2fd2") // <= needed to return databases back to its previous state;
   });
 });
 
@@ -52,7 +53,7 @@ describe(`getLongUrl` , () => {
 
 describe(`getFromDatabase` , () => {
 
-  it('if there is an object in database with specified shortURL it should return respective longURL', function () {
+  it('if there is an object in database with specified shortURL as a key it should return respective longURL', function () {
   
     const expectedOutput = "http://www.lighthouselabs.ca"
     const result = getFromDatabase({urlDatabase, shortURL: "b2xVn2"});
@@ -60,9 +61,57 @@ describe(`getFromDatabase` , () => {
   
   });
   
-  it("if there is no object in database with specified shortURL it should return 'false'", function () {
+  it("if there is no object in database with specified shortURL as a key it should return 'false'", function () {
   
-    const expectedOutput = "undefined" // <= used here for consistency only
+    const expectedOutput = false // <= used here for consistency only
+    const result = getFromDatabase({urlDatabase, shortURL: "b2xVn3"});
+    assert.isFalse(result);
+  
+  });
+});
+
+describe(`removeFromDatabase` , () => {
+
+  it('if there is an object in database with specified shortURL as a key it should be removed from the improvised database', function () {
+  
+    const expectedOutput = {
+      "9sm5xK": {
+        longURL: "http://www.google.com",
+        userID: "userRandomID"
+      },
+      "sgq3y6": {
+        longURL: "https://support.mozilla.org/en-US/products/firefox",
+        userID: "userRandomID"
+      }
+    }
+    let urlDatabaseTest = urlDatabase;
+    const result = removeFromDatabase(urlDatabaseTest,"b2xVn2");
+    assert.deepEqual(urlDatabaseTest, expectedOutput);
+  
+  });
+  
+  it("if there is no object in database with specified shortURL as a key it should return 'false'", function () {
+    
+    const expectedOutput = false // <= used here for consistency only
+    const result = removeFromDatabase({urlDatabase, shortURL: "b2xVn3"});
+    assert.isFalse(result);
+  
+  });
+});
+
+describe(`getFromDatabase` , () => {
+
+  it('if there is an object in database with specified shortURL as a key it should return respective longURL', function () {
+  
+    const expectedOutput = "http://www.lighthouselabs.ca"
+    const result = getFromDatabase({urlDatabase, shortURL: "b2xVn2"});
+    assert.equal(result, expectedOutput);
+  
+  });
+  
+  it("if there is no object in database with specified shortURL as a key it should return 'false'", function () {
+  
+    const expectedOutput = false // <= used here for consistency only
     const result = getFromDatabase({urlDatabase, shortURL: "b2xVn3"});
     assert.isFalse(result);
   
