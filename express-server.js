@@ -25,7 +25,7 @@ app.use(express.static("public"));
 app.get("/", (req, res) => {
 
   const id = extractID(req.session);
-
+  // Check if user is logged in and if not return 401 error
   if (id) {
 
     res
@@ -48,7 +48,7 @@ app.get("/urls", (req, res) => {
   const id = extractID(req.session);
   const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
   const templateVars = { urls: urlDatabaseFiltered, 'userid': id, users};
-
+  // Check if user is logged in and if not return 401 error
   if (id) {
 
     res
@@ -70,7 +70,7 @@ app.get("/urls/new", (req, res) =>{
 
   const id = extractID(req.session);
   
-
+  // Check if user is logged in and if not return 403 error
   if (id === null) {
 
     res
@@ -91,7 +91,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
   const id = extractID(req.session);
   const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
-
+  //Check if the link which a user tries to edit was created by them. If not - return 403 status and redirct to permission denied template
   if (urlDatabase[req.params.shortURL]['userID'] !== id) {
 
     res
@@ -99,7 +99,7 @@ app.get("/urls/:shortURL", (req, res) => {
       .render('urls_prohibited', {error: "Error 403: You don't have permissions to modify this link"});
     return;
   }
-
+  //Check if user is logged
   if (id) {
 
     const templateVar = { 'shortURL': req.params.shortURL, 'longURL': getFromDatabase({'urlDatabase':urlDatabaseFiltered, shortURL: req.params.shortURL}), 'userid': id, users};
@@ -118,15 +118,21 @@ app.get("/urls/:shortURL", (req, res) => {
 
 });
 
-//A  GET route to redirect a user to a website using a shortURL
+//A GET route to redirect a user to a website using a shortURL
 app.get("/u/:shortURL", (req, res) => {
 
  
   const longURL = getFromDatabase({urlDatabase, shortURL: req.params.shortURL});
+  //Check if requested shortURL is in database. If not - show an error message and return status 404.
   if (longURL) {
     res
       .status(200)
       .redirect(longURL);
+  } else {
+
+    res
+      .status(404)
+      .render('urls_registration-error', {error: "Error 404: No such shortURL in our database."});
   }
 
 });
@@ -163,7 +169,7 @@ app.post('/urls/:shortID', (req, res) => {
   let updateVal = req.params.shortID;
   const id = extractID(req.session);
   const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
-
+  // Check if the current user have permissions to modify this link, if not - show an error.
   if (urlDatabase[updateVal]['userID'] !== id) {
 
     res
@@ -174,7 +180,7 @@ app.post('/urls/:shortID', (req, res) => {
   }
 
   if (id) {
-    // if the link specified by user to modify in the database, then we modify it and re-direct a user back to main page. Else we show them error-page
+    // if the link specified by user to modify is in the database, then we modify it and re-direct a user back to main page. Else we show them error-page
     if (getFromDatabase({'urlDatabase':urlDatabaseFiltered, shortURL:updateVal})) {
 
       addToDatabase(urlDatabase, updateVal, req.body.longURL, id);
@@ -192,7 +198,7 @@ app.post('/urls/:shortID', (req, res) => {
       .redirect("/urls");
 
   } else {
-
+    // This check is implemented to prohibit curl POST requests;
     res
       .status(401)
       .render('urls_registration-error', {error: `Error 401: You need to be logged to be able to update the shortID: ${updateVal}` });
@@ -205,7 +211,7 @@ app.post('/urls/:shortID', (req, res) => {
 app.post("/urls", (req, res) => {
 
   const id = extractID(req.session);
-
+  // Check if user is logged in before proceeding
   if (id === null) {
 
     res
@@ -230,7 +236,7 @@ app.post("/urls/:shortURL", (req, res)=> {
   const id = extractID(req.session);
   let toEdit = req.params.shortURL;
   const urlDatabaseFiltered = urlsForUser({data:urlDatabase, userID: id});
-
+  // Check if user have permissions to modify a link
   if (urlDatabase[toEdit]['userID'] !== id) {
 
     res
@@ -263,7 +269,7 @@ app.post("/urls/:shortURL/delete", (req, res)=> {
 
   const id = extractID(req.session);
   let toRemove = req.params.shortURL;
-
+  // Check if user have permissions to modify the link
   if (urlDatabase[toRemove]['userID'] !== id) {
 
     res
@@ -272,7 +278,7 @@ app.post("/urls/:shortURL/delete", (req, res)=> {
     return;
 
   }
-
+  // Check if user is logged
   if (id === null) {
 
     res
@@ -299,14 +305,14 @@ app.post('/login', (req, res) => {
 
   const {email, password} = req.body;
   const userID = getUserID({data:users, email});
-  
+  // Check is there was any value enteres in email field as our application uses e-mail to retrive the rest of information from user
   if (email === "") {
     res
       .status(400)
       .render('urls_registration-error', {error: "Error 400: E-mail cannot be blank please try again!"});
     return;
   }
-  
+  // Check if there is a user with such email address in our users Database
   if (userID !== null) {
   
     if (!bcrypt.compareSync(password, users[userID]['password'])) {
@@ -331,7 +337,7 @@ app.post('/login', (req, res) => {
 
 // A POST route to logout and clear cookies:
 app.post('/logout', (req, res) => {
-
+  // Clear session cookies after user logout.
   req.session = null;
   res
     .redirect('/');
@@ -342,11 +348,13 @@ app.post('/logout', (req, res) => {
 app.post('/register', (req, res)=> {
 
   const {email, password} = req.body;
+  //Check if user provided both email and password. If any of them was not provided - return an error
   if (email === '' || password === '') {
     res
       .status(400)
       .render('urls_registration-error', {error: "Error 400: Email or Password field cannot be empty!"});
     return;
+  // Check if user with this email already exists in the user Database. if so, return an error
   } else if (userExists({email, users}) === true) {
     res
       .status(400)
@@ -365,7 +373,7 @@ app.post('/register', (req, res)=> {
 //=====================================================================Listening Server=================================================================================
 //======================================================================================================================================================================
 
-//Begin listening via PORT
+//Begin listening on a specified PORT
 app.listen(PORT, () => {
 
   console.log(`Example app listening on port ${PORT}!`);
