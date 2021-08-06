@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const {letters, numbers} = require('../helpers/constants');
 
 //Function to generate random strings which will be used as an shortURL
@@ -129,4 +130,15 @@ const urlsForUser = function({data, userID}) {
   return urlsForUser;
 };
 
-module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser, getLongUrl};
+//Function to hushify all existing passwords in the database:
+
+const hushPasswords = function(data) {
+  
+  for (key in data) {
+    const hushedPassword = bcrypt.hashSync(data[key]['password'], 10);
+    data[key]['password'] = hushedPassword;
+  }
+  
+}
+
+module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser, getLongUrl, hushPasswords };
