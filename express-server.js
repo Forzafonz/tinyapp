@@ -3,13 +3,13 @@ const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const {users, urlDatabase} = require("./helpers/data");
 const {PORT} = require("./helpers/constants");
-const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser, hushPasswords} = require('./helpers/functions');
+const {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser, hashPasswords} = require('./helpers/functions');
 
 
 //Express and its Middleware set-up
 
 const app = express();
-hushPasswords(users); // <= needed to hashify unhashed passwords of users that already exist in improvised database
+hashPasswords(users); // <= needed to hashify unhashed passwords of users that already exist in improvised database
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}));
 app.use(cookieSession({

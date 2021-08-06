@@ -132,7 +132,7 @@ const urlsForUser = function({data, userID}) {
 
 //Function to hushify all existing passwords in the database:
 
-const hushPasswords = function(data) {
+const hashPasswords = function(data) {
   
   for (let key in data) {
     const hushedPassword = bcrypt.hashSync(data[key]['password'], 10);
@@ -141,4 +141,4 @@ const hushPasswords = function(data) {
   
 };
 
-module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser, getLongUrl, hushPasswords };
+module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser, getLongUrl, hashPasswords };
