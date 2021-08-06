@@ -4,13 +4,25 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup d-flex flex-row">
       <div class="navbar-nav mr-auto mt-2 mt-lg-0">
 
+        <% if (userid === null) { %>
+
+        <form method="GET" action="/login" class = "form-inline mr-0 my-lg-0">
+          <input type="submit" value="Login" class="btn btn-link" style = "color: beige; text-decoration: none; font-size: large; font-weight: bold;" id = 'button1'>
+        </form>
+        <form method="GET" action="/register" class = "form-inline mr-0 my-lg-0">
+          <input type="submit" value="Register" class="btn btn-link" style = "color: beige; text-decoration: none; font-size: large; font-weight: bold;" id = 'button2'>
+        </form>
+
+        <% } else { %>
+
         <form method="GET" action="/urls" class = "form-inline mr-0 my-lg-0">
           <input type="submit" value="My URLs" class="btn btn-link" style = "color: beige; text-decoration: none; font-size: large; font-weight: bold;" id = 'button1'>
         </form>
         <form method="GET" action="/urls/new" class = "form-inline mr-0 my-lg-0">
           <input type="submit" value="New URL" class="btn btn-link" style = "color: beige; text-decoration: none; font-size: large; font-weight: bold;" id = 'button2'>
         </form>
-
+        
+        <% } %>
       </div>
         <% if (userid === null) { %>
 
