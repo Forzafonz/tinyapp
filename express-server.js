@@ -331,8 +331,8 @@ app.post('/login', (req, res) => {
 // A POST route to logout and clear cookies:
 app.post('/logout', (req, res) => {
 
+  req.session = null;
   res
-    .clearCookie('userid')
     .redirect('/');
 
 });
