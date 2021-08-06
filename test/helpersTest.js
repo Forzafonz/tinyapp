@@ -50,21 +50,21 @@ describe(`getLongUrl` , () => {
   });
 });
 
-describe(`getLongUrl` , () => {
+describe(`getFromDatabase` , () => {
 
-  it('if there is no https prefix in the link, it should return a link with https attached to it', function () {
+  it('if there is an object in database with specified shortURL it should return respective longURL', function () {
   
-    const expectedOutput = "https://www.youtube.com"
-    const result = getLongUrl("www.youtube.com");
+    const expectedOutput = "http://www.lighthouselabs.ca"
+    const result = getFromDatabase({urlDatabase, shortURL: "b2xVn2"});
     assert.equal(result, expectedOutput);
   
   });
   
-  it('if there is https prfix in the link, it should return the same link', function () {
+  it("if there is no object in database with specified shortURL it should return 'false'", function () {
   
-    const expectedOutput = "https://www.youtube.com"
-    const result = getLongUrl("https://www.youtube.com");
-    assert.equal(result, expectedOutput);
+    const expectedOutput = "undefined" // <= used here for consistency only
+    const result = getFromDatabase({urlDatabase, shortURL: "b2xVn3"});
+    assert.isFalse(result);
   
   });
 });
