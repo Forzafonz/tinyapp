@@ -23,7 +23,7 @@ const addToDatabase = function(urlDatabase, shortUrl, longUrl, id) {
 // Function returns longURL from the database based on shortURL
 const getFromDatabase = function({urlDatabase, shortURL}) {
 
-  if (urlDatabase[shortURL] === 'undefined') {
+  if (urlDatabase[shortURL] === undefined) {
     return false;
   }
   return urlDatabase[shortURL]['longURL'];
@@ -33,7 +33,7 @@ const getFromDatabase = function({urlDatabase, shortURL}) {
 // Function which removes longURL and shortURL pair from the database
 const removeFromDatabase = function(urlDatabase, shortURL) {
 
-  if (urlDatabase[shortURL] === 'undefined') {
+  if (urlDatabase[shortURL] === undefined) {
     return false;
   }
   delete urlDatabase[shortURL];
