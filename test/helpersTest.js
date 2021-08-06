@@ -135,3 +135,22 @@ describe(`addUser (to users Database)` , () => {
   
   });
 });
+
+describe(`getUserID` , () => {
+
+  it('if there is an object in user database with specified email as a value it should return this user ID', function () {
+  
+    const expectedOutput = "userRandomID"
+    const result = getUserID({data: users, email: "user@example.com"});
+    assert.equal(result, expectedOutput);
+  
+  });
+  
+  it("If there is no object in user database with specified email as a value it should return this user ID", function () {
+  
+    const expectedOutput = null // <= used here for consistency only
+    const result = getUserID({data: users, email: "user@example.com2"});
+    assert.isNull(result);
+  
+  });
+});
