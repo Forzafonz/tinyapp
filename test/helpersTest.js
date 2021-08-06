@@ -99,21 +99,39 @@ describe(`removeFromDatabase` , () => {
   });
 });
 
-describe(`getFromDatabase` , () => {
+describe(`addUser (to users Database)` , () => {
 
-  it('if there is an object in database with specified shortURL as a key it should return respective longURL', function () {
+  it('if there is no existing user with the same userID then add a user to user Database', function () {
   
-    const expectedOutput = "http://www.lighthouselabs.ca"
-    const result = getFromDatabase({urlDatabase, shortURL: "b2xVn2"});
-    assert.equal(result, expectedOutput);
+    const expectedOutput = { 
+
+      "userRandomID": {
+        id: "userRandomID", 
+        email: "user@example.com", 
+        password: "purple-monkey-dinosaur"
+      },
+     "user2RandomID": {
+        id: "user2RandomID", 
+        email: "user2@example.com", 
+        password: "dishwasher-funk"
+      },
+      "a53g6G": {
+        id: "a53g6G",
+        email: "anton@anton",
+        password: "testpassword"
+        }
+    };
+    
+    addUser({data:users, id:"a53g6G", email: "anton@anton", password: "testpassword"});
+    assert.deepEqual(users, expectedOutput);
   
   });
   
-  it("if there is no object in database with specified shortURL as a key it should return 'false'", function () {
+  it("if there is existing user with the same userID that is attempted to be added then return 'null'", function () {
   
     const expectedOutput = false // <= used here for consistency only
-    const result = getFromDatabase({urlDatabase, shortURL: "b2xVn3"});
-    assert.isFalse(result);
+    const result = addUser({data:users, id:"a53g6G", email: "anton@anton", password: "testpassword"});
+    assert.isNull(result);
   
   });
 });
