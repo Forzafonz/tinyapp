@@ -192,3 +192,44 @@ describe(`userExists` , () => {
   
   });
 });
+
+describe(`urlsForUser ` , () => {
+
+  it('Return a list of URLs that were created by specified user if there are such URLs in databaseURL', function () {
+    //Prepare dataset//
+    addToDatabase(urlDatabase, "sa2fd2","https://www.youtube.com", "randomUser");
+    addToDatabase(urlDatabase, "sa2fd5","https://stackoverflow.com", "randomUser");
+    addToDatabase(urlDatabase, "sa2fd6","https://www.reddit.com", "userRandomID");
+    //End of dataset preparation//
+    const expectedOutput = {
+
+      "sa2fd6": {
+        longURL: "https://www.reddit.com",
+        userID: "userRandomID"
+      },
+
+      "9sm5xK": {
+        longURL: "http://www.google.com",
+        userID: "userRandomID"
+      },
+      "sgq3y6": {
+        longURL: "https://support.mozilla.org/en-US/products/firefox",
+        userID: "userRandomID"
+      }
+    }
+
+      
+    const result = urlsForUser({data: urlDatabase, userID: "userRandomID"});
+    assert.deepEqual(result, expectedOutput);
+  
+  });
+  
+  it("Return 'null' if there is no URL in databaseURL created by specified user", function () {
+  
+    const expectedOutput = null // <= used here for consistency only
+    const result = urlsForUser({data: urlDatabase, userID: "NoOneIsGoingToUseThisIDinPROD"});
+    assert.isNull(result);
+  
+  });
+});
+
