@@ -154,3 +154,23 @@ describe(`getUserID` , () => {
   
   });
 });
+
+describe(`extractID from cookies file` , () => {
+
+  it('if cookies object is not empty and have a userid parameter - return value of userid parameter', function () {
+  
+    const expectedOutput = "g4si1B"
+    const result = extractID({userid: 'g4si1B'});
+    assert.equal(result, expectedOutput);
+  
+  });
+  
+  it("if cookies object is empty or does not have a userid parameter - return null", function () {
+  
+    const expectedOutput = null // <= used here for consistency only
+    const result = extractID({});
+    assert.isNull(result);
+  
+  });
+});
+
