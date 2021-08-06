@@ -1,6 +1,6 @@
 # TinyApp Description 
 
-This is a Full Stack Application which allows users to shorten long URLs much like TinyURL.com and bit.ly do. This application support creation, editing and deletion of short URL for a given long URL. Users can only modify short URLs which were created by them. However, all users can use short URL to be redirected to a matching website. 
+This is a Full Stack Application which allows users to shorten long URLs much like TinyURL.com and bit.ly do. This application support creation, editing and deletion of short URL for a given long URL. Users can only modify short URLs which were created by them. However, all users can use short URL to be redirected to a target website. 
 
 # Dependencies
 
