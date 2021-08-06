@@ -14,6 +14,7 @@ const generateRandomString = function() {
 
 //Function which is used to add/update longUrl in the database based on shortUrl
 const addToDatabase = function(urlDatabase, shortUrl, longUrl, id) {
+
   let standUrl = getLongUrl(longUrl);
   urlDatabase[shortUrl] = {longURL:standUrl, userID: id};
 
@@ -128,4 +129,4 @@ const urlsForUser = function({data, userID}) {
   return urlsForUser;
 };
 
-module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser};
+module.exports = {generateRandomString, addToDatabase, getFromDatabase, removeFromDatabase, getUniqID, addUser, getUserID, extractID, userExists, urlsForUser, getLongUrl};
