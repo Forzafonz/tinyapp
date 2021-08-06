@@ -14,8 +14,10 @@ This is a Full Stack Application which allows users to shorten long URLs much li
 # Getting Started
 
 1. Clone repository in your local folder: `git clone git@github.com:Forzafonz/tinyapp.git tinyApp`
-1. Install all dependencies (_using the `npm install` command)_. 
+1. Switch into tinyApp directory. `cd tinyApp`
+1. Install all dependencies (using the `npm install` command). 
 1. Run the development web server using the `node express_server.js` command.
+1. Make sure there is no active cookie-session created by another tinyApp (if you run multiple)
 1. Go to `localhost:8080` in your browser of choice
 
 # Screenshots
