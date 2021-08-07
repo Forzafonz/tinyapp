@@ -9,6 +9,7 @@ This is a Full Stack Application which allows users to shorten long URLs much li
   * EJS
   * bcrypt
   * cookie-session
+  * Bootstrap
   * mocha/chai (_for testing purposes only_)
 
 # Getting Started
@@ -21,7 +22,7 @@ This is a Full Stack Application which allows users to shorten long URLs much li
 1. Go to `localhost:8080` in your browser of choice
 
 # Screenshots
-## Langing Page:
+## Landing Page:
 ![Welcome Page](/Images/Welcome.png)
 ## Registration Page:
 ![Register Page](/Images/Register.png)
